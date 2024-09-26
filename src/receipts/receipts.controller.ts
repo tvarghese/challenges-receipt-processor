@@ -1,39 +1,33 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  Body,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-  Logger,
-} from "@nestjs/common";
-import { ReceiptsService } from "./receipts.service";
-import { Receipt } from "./receipts.interface";
+// src/receipts/receipts.controller.ts
 
-@Controller("receipts")
+import { Controller, Post, Get, Param, Body, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ReceiptsService } from './receipts.service';
+import { ReceiptDto } from './dto/receipt.dto';
+
+@Controller('receipts')
 export class ReceiptsController {
   constructor(private readonly receiptsService: ReceiptsService) {}
-  private readonly logger = new Logger(ReceiptsController.name);
 
-  @Post("process")
-  processReceipt(@Body() receipt: Receipt) {
-    const id = this.receiptsService.processReceipt(receipt);
-    return { id };
+  @Post('process')
+  processReceipt(@Body() receiptDto: ReceiptDto) {
+    try {
+      const id = this.receiptsService.processReceipt(receiptDto);
+      return { id };
+    } catch (error) {
+      throw new BadRequestException('Invalid receipt');
+    }
   }
 
-  @Get(":id/points")
-  getPoints(@Param("id") id: string) {
+  @Get(':id/points')
+  getPoints(@Param('id') id: string) {
     try {
       const points = this.receiptsService.getPoints(id);
       return { points };
     } catch (error) {
       if (error instanceof NotFoundException) {
-        this.logger.error(`receipt with id : ${id} not found`);
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+        throw error;
       }
-      throw error;
+      throw new BadRequestException('Invalid receipt ID');
     }
   }
 }

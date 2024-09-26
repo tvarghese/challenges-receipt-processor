@@ -6,6 +6,12 @@ import { Receipt } from './receipts.interface';
 export class ReceiptsController {
   constructor(private readonly receiptsService: ReceiptsService) {}
 
+  @Post('process')
+  processReceipt(@Body() receipt: Receipt) {
+    const id = this.receiptsService.processReceipt(receipt);
+    return { id };
+  }
+  
   @Get(':id/points')
   getPoints(@Param('id') id: string) {
     const points = this.receiptsService.getPoints(id);

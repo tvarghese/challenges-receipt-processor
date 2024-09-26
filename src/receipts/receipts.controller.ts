@@ -1,20 +1,30 @@
-import { Controller, Post, Get, Param, Body, HttpException, HttpStatus, NotFoundException, Logger } from '@nestjs/common';
-import { ReceiptsService } from './receipts.service';
-import { Receipt } from './receipts.interface';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Body,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+  Logger,
+} from "@nestjs/common";
+import { ReceiptsService } from "./receipts.service";
+import { Receipt } from "./receipts.interface";
 
-@Controller('receipts')
+@Controller("receipts")
 export class ReceiptsController {
   constructor(private readonly receiptsService: ReceiptsService) {}
   private readonly logger = new Logger(ReceiptsController.name);
 
-  @Post('process')
+  @Post("process")
   processReceipt(@Body() receipt: Receipt) {
     const id = this.receiptsService.processReceipt(receipt);
     return { id };
   }
 
-  @Get(':id/points')
-  getPoints(@Param('id') id: string) {
+  @Get(":id/points")
+  getPoints(@Param("id") id: string) {
     try {
       const points = this.receiptsService.getPoints(id);
       return { points };

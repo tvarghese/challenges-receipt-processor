@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Receipt } from './receipts.interface';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,7 +9,10 @@ export class ReceiptsService {
   private points: Map<string, number> = new Map();
 
   getPoints(id: string): number {
-    return this.points.get(id) || 0;
+    if (!this.points.has(id)) {
+      throw new NotFoundException(`Receipt with ID ${id} not found`);
+    }
+    return this.points.get(id);
   }
 
   processReceipt(receipt: Receipt): string {
